@@ -104,20 +104,20 @@ const turnInDirection = ({ bearing, direction }) => {
   return clockwiseBearings[newBearingIndex];
 }
 
-/** getOffsetForStep
+/** getMultiplicandForStep
   Calculates the impact of a given step on the X and Y axes
 
   @param bearing {string} - enum of 'north', 'south', 'east', 'west'
-  @param direction {string} - enum of 'L', 'R'
+  @param direction {string} - enum of 'left', 'right'
 
   @returns {object} an object providing multiplicands for X/Y axes.
 
-  @example getOffsetForStep({ bearing: 'north', direction: 'left'})
+  @example getMultiplicandForStep({ bearing: 'north', direction: 'left'})
     --> { x: -1, y: 0 }
-  @example getOffsetForStep({ bearing: 'east', direction: 'right'})
+  @example getMultiplicandForStep({ bearing: 'east', direction: 'right'})
     --> { x: 0, y: 1 }
 */
-const getOffsetForStep = ({ bearing, direction }) => {
+const getMultiplicandForStep = ({ bearing, direction }) => {
   switch (bearing) {
     case 'north': return { x: direction === 'left' ? -1 : 1, y: 0 };
     case 'south': return { x: direction === 'left' ? 1 : -1 , y: 0 };
@@ -126,6 +126,22 @@ const getOffsetForStep = ({ bearing, direction }) => {
   }
 }
 
+
+/** getAxes
+  Given a multiplicand for each axis, figure out which is the primary and
+  which is the secondary. Return them in order.
+
+  @param x {number} - either -1 (moving west), 0 (not moving), or 1 (east)
+  @param y {number} - either -1 (moving north), 0 (not moving), or 1 (south)
+
+  @returns {[number]} the primary and secondary axis, in order
+
+  @example getAxes({ x: -1, y: 0 }) --> ['x', 'y']
+  @example getAxes({ x: 0, y: 1 }) --> ['y', 'x']
+*/
+const getAxes = ({ x, y }) => x === 0 ? ['y', 'x'] : ['x', 'y'];
+
+
 /** walk
   Given an input of steps, calculate the x/y offset from initial point to
   final point, OR from initial point to the first duplicated point if
@@ -133,8 +149,8 @@ const getOffsetForStep = ({ bearing, direction }) => {
 
   @param input {[object]} - the sequence of steps. Provided by `formatInput`.
   @param initialBearing {string} - one of 'north'/'south'/'east'/'west'
-  @param returnOnDuplicateStep {boolean} - Whether to return early, if/whene
-  a duplicated step is found.
+  @param returnOnDuplicatePosition {boolean} - Whether to return early,
+  if/whene a duplicated step is found.
 
   @example walk({ rawInput: 'R4, L2' }) --> { x: 4, y: -2 }
 */
@@ -143,31 +159,48 @@ function walk({
   initialBearing = 'north',
   currentPosition = { x: 0, y: 0 },
   history = {},
-  returnOnDuplicateStep = false,
+  returnOnDuplicatePosition = false,
 }) {
   const bearing = currentPosition.bearing || initialBearing;
 
   const { direction, distance } = input[0];
-  const offset = getOffsetForStep({ bearing, direction });
+  const offset = getMultiplicandForStep({ bearing, direction });
 
-  // Update the current position
-  const newPosition = {
-    x: currentPosition.x + offset.x * distance,
-    y: currentPosition.y + offset.y * distance,
-    bearing: turnInDirection({ bearing, direction }),
-  };
+  const [primaryAxis, secondaryAxis] = getAxes(offset);
 
-  // If we'd like to return on duplicated step, we need to track this position
-  // and check it with our history.
-  if (returnOnDuplicateStep) {
-    const positionKey = `${newPosition.x}-${newPosition.y}`;
+  // Take as many steps needed in the right direction.
+  let numOfStepsNeeded = distance;
+  let stepPosition = Object.assign({}, currentPosition);
 
-    if (typeof history[positionKey] !== 'undefined') {
-      return newPosition;
+  while (numOfStepsNeeded > 0) {
+    stepPosition = {
+      [primaryAxis]: stepPosition[primaryAxis] + offset[primaryAxis],
+      [secondaryAxis]: stepPosition[secondaryAxis],
+    };
+
+    console.log(`current main axis (${primaryAxis}) val: ${stepPosition[primaryAxis]}`);
+    console.log(`current offset: ${offset[primaryAxis]}`)
+
+
+    if (returnOnDuplicatePosition) {
+      const positionKey = `${stepPosition.x}-${stepPosition.y}`;
+
+      console.log(positionKey)
+
+      if (typeof history[positionKey] !== 'undefined') {
+        return stepPosition;
+      }
+
+      history[positionKey] = stepPosition;
     }
 
-    history[positionKey] = newPosition;
+    numOfStepsNeeded -= 1;
   }
+
+  // Update the current position
+  const newPosition = Object.assign({}, stepPosition, {
+    bearing: turnInDirection({ bearing, direction }),
+  });
 
   // If this is the final step in our input sequence, we're done!
   const newInput = input.slice(1);
@@ -179,7 +212,7 @@ function walk({
     input: newInput,
     currentPosition: newPosition,
     history,
-    returnOnDuplicateStep,
+    returnOnDuplicatePosition,
   });
 }
 
@@ -190,7 +223,7 @@ const solve = (part) => {
 
   const { x, y } = walk({
     input: formatInput(inputString),
-    returnOnDuplicateStep: part === 2,
+    returnOnDuplicatePosition: part === 2,
   });
 
   return Math.abs(x) + Math.abs(y);
@@ -199,11 +232,11 @@ const solve = (part) => {
 console.log("Part 1 Solution:", solve(1));
 console.log("Part 2 Solution:", solve(2));
 
-
 module.exports = {
   getHumanFriendlyDirection,
   formatInput,
-  getOffsetForStep,
+  getMultiplicandForStep,
+  getAxes,
   turnInDirection,
   walk,
 };

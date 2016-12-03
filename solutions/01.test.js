@@ -3,7 +3,8 @@ const { expect } = require('chai');
 const {
   getHumanFriendlyDirection,
   formatInput,
-  getOffsetForStep,
+  getMultiplicandForStep,
+  getAxes,
   turnInDirection,
   walk,
 } = require('./01.js');
@@ -62,9 +63,9 @@ describe('Problem 01', () => {
     });
   });
 
-  describe('getOffsetForStep', () => {
+  describe('getMultiplicandForStep', () => {
     it('handles `north` and `left`', () => {
-      const actualResult = getOffsetForStep({
+      const actualResult = getMultiplicandForStep({
         bearing: 'north',
         direction: 'left',
       });
@@ -75,7 +76,7 @@ describe('Problem 01', () => {
     });
 
     it('handles `west` and `right`', () => {
-      const actualResult = getOffsetForStep({
+      const actualResult = getMultiplicandForStep({
         bearing: 'west',
         direction: 'right',
       });
@@ -86,12 +87,54 @@ describe('Problem 01', () => {
     });
 
     it('handles `south` and `right`', () => {
-      const actualResult = getOffsetForStep({
+      const actualResult = getMultiplicandForStep({
         bearing: 'south',
         direction: 'right',
       });
 
       const expectedResult = { x: -1, y: 0 };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+  });
+
+  describe('getAxes', () => {
+    it('gets the X axis with a positive value', () => {
+      const actualResult = getAxes({
+        x: 1,
+        y: 0,
+      });
+      const expectedResult = ['x', 'y'];
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('gets the X axis with a negative value', () => {
+      const actualResult = getAxes({
+        x: -1,
+        y: 0,
+      });
+      const expectedResult = ['x', 'y'];
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('gets the Y axis with a positive value', () => {
+      const actualResult = getAxes({
+        x: 0,
+        y: 1,
+      });
+      const expectedResult = ['y', 'x'];
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('gets the Y axis with a negative value', () => {
+      const actualResult = getAxes({
+        x: 0,
+        y: -1,
+      });
+      const expectedResult = ['y', 'x'];
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
@@ -159,6 +202,19 @@ describe('Problem 01', () => {
       const input = formatInput('L3, L3, L3, L4');
       const actualResult = walk({ input, initialBearing: 'west' });
       const expectedResult = { x: -1, y: 0, bearing: 'west' };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it.only('handles returning on duplicate position', () => {
+      //     /-\
+      //    |  |
+      // O--+--/      <-- should return on the +, not the x
+      //    |
+      //     \-x
+      const input = formatInput('R5, L2, L2, L5, L3');
+      const actualResult = walk({ input, returnOnDuplicatePosition: true });
+      const expectedResult = { x: 2, y: 0 };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
