@@ -4,6 +4,8 @@ const {
   getHumanFriendlyDirection,
   formatInput,
   getOffsetForStep,
+  turnInDirection,
+  walk,
 } = require('./01.js');
 
 
@@ -29,6 +31,17 @@ describe('Problem 01', () => {
       const actualResult = formatInput(input);
       const expectedResult = [
         { direction: 'left', distance: 4 },
+      ];
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('handles multi-digit numbers', () => {
+      const input = 'L14';
+
+      const actualResult = formatInput(input);
+      const expectedResult = [
+        { direction: 'left', distance: 14 },
       ];
 
       expect(actualResult).to.deep.equal(expectedResult);
@@ -79,6 +92,70 @@ describe('Problem 01', () => {
       });
 
       const expectedResult = { x: -1, y: 0 };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+  });
+
+  describe('turnInDirection', () => {
+    it('turns left while facing north', () => {
+      const actualResult = turnInDirection({
+        bearing: 'north',
+        direction: 'left',
+      });
+      const expectedResult = 'west';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+    it('turns right while facing north', () => {
+      const actualResult = turnInDirection({
+        bearing: 'north',
+        direction: 'right',
+      });
+      const expectedResult = 'east';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('turns left while facing west', () => {
+      const actualResult = turnInDirection({
+        bearing: 'west',
+        direction: 'left',
+      });
+      const expectedResult = 'south';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('turns right while facing west', () => {
+      const actualResult = turnInDirection({
+        bearing: 'west',
+        direction: 'right',
+      });
+      const expectedResult = 'north';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+  });
+
+  describe('walk', () => {
+    it('handles a single instruction', () => {
+      const actualResult = walk('R5');
+      const expectedResult = { x: 5, y: 0, bearing: 'east' };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('handles two instructions', () => {
+      const actualResult = walk('R5, L2');
+      const expectedResult = { x: 5, y: -2, bearing: 'north' };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('handles several instructions, and a non-default initial bearing', () => {
+      const actualResult = walk('L3, L3, L3, L4', 'west');
+      const expectedResult = { x: -1, y: 0, bearing: 'west' };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });

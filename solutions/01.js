@@ -31,7 +31,6 @@ R5, L5, R5, R3 leaves you 12 blocks away.
 How many blocks away is Easter Bunny HQ?
 */
 
-const inputString = 'L4, L3, R1, L4, R2, R2, L1, L2, R1, R1, L3, R5, L2, R5, L4, L3, R2, R2, L5, L1, R4, L1, R3, L3, R5, R2, L5, R2, R1, R1, L5, R1, L3, L2, L5, R4, R4, L2, L1, L1, R1, R1, L185, R4, L1, L1, R5, R1, L1, L3, L2, L1, R2, R2, R2, L1, L1, R4, R5, R53, L1, R1, R78, R3, R4, L1, R5, L1, L4, R3, R3, L3, L3, R191, R4, R1, L4, L1, R3, L1, L2, R3, R2, R4, R5, R5, L3, L5, R2, R3, L1, L1, L3, R1, R4, R1, R3, R4, R4, R4, R5, R2, L5, R1, R2, R5, L3, L4, R1, L5, R1, L4, L3, R5, R5, L3, L4, L4, R2, R2, L5, R3, R1, R2, R5, L5, L3, R4, L5, R5, L3, R1, L1, R4, R4, L3, R2, R5, R1, R2, L1, R4, R1, L3, L3, L5, R2, R5, L1, L4, R3, R3, L3, R2, L5, R1, R3, L3, R2, L1, R4, R3, L4, R5, L2, L2, R5, R1, R2, L4, L4, L5, R3, L4';
 
 
 /** getHumanFriendlyDirection
@@ -39,7 +38,7 @@ const inputString = 'L4, L3, R1, L4, R2, R2, L1, L2, R1, R1, L3, R5, L2, R5, L4,
 
   @param dir {string} - enum of 'L', 'R'
   @returns {string} - either 'left' or 'right'
- */
+*/
 const getHumanFriendlyDirection = dir => {
   switch (dir) {
     case 'L': return 'left';
@@ -63,12 +62,12 @@ const getHumanFriendlyDirection = dir => {
     { direction: 'right', distance: 1 },
     { direction: 'left', distance: 3 },
   ]
- */
+*/
 const formatInput = input => (
   input
     .split(', ')
     .map(step => {
-      const [dir, distance] = step.split('');
+      const [dir, distance] = [step[0], step.substr(1)];
 
       return {
         direction: getHumanFriendlyDirection(dir),
@@ -77,34 +76,101 @@ const formatInput = input => (
     })
 );
 
+/** turnInDirection
+  Calculates the new bearing, given a current bearing and a turn direction
+
+  @param bearing {string} - enum of 'north', 'south', 'east', 'west'
+  @param direction {string} - enum of 'L', 'R'
+
+  @returns {string} - enum of 'north', 'south', 'east', 'west'
+
+  @example turnInDirection({ bearing: 'north', direction: 'left' })
+    --> 'west'
+  @example turnInDirection({ bearing: 'east', direction: 'right' })
+    --> 'south'
+*/
+const turnInDirection = ({ bearing, direction }) => {
+  const clockwiseBearings = ['north', 'east', 'south', 'west'];
+  const currentBearingIndex = clockwiseBearings.indexOf(bearing);
+
+  const directionIncrement = direction === 'right' ? 1 : -1;
+
+  // Turn the `clockwiseBearings` array circular, taking the remainder after
+  // dividing by 4. We add 4 as well, to avoid ever going into negative indices.
+  const newBearingIndex = Math.abs(
+    (currentBearingIndex + directionIncrement + 4) % 4
+  );
+
+  return clockwiseBearings[newBearingIndex];
+}
+
 /** getOffsetForStep
   Calculates the impact of a given step on the X and Y axes
 
   @param bearing {string} - enum of 'north', 'south', 'east', 'west'
   @param direction {string} - enum of 'L', 'R'
 
-  @returns {object} an object providing multiplicands for X/Y axes. eg. { x: 1, y: 0 }
+  @returns {object} an object providing multiplicands for X/Y axes.
 
-  @example getOffsetForStep('north', 'L') --> { x: -1, y: 0 }
-  @example getOffsetForStep('east', 'R') --> { x: 0, y: 1 }
- */
+  @example getOffsetForStep({ bearing: 'north', direction: 'left'})
+    --> { x: -1, y: 0 }
+  @example getOffsetForStep({ bearing: 'east', direction: 'right'})
+    --> { x: 0, y: 1 }
+*/
 const getOffsetForStep = ({ bearing, direction }) => {
   switch (bearing) {
     case 'north': return { x: direction === 'left' ? -1 : 1, y: 0 };
     case 'south': return { x: direction === 'left' ? 1 : -1 , y: 0 };
     case 'east': return { x: 0, y: direction === 'left' ? -1 : 1 };
     case 'west': return { x: 0, y: direction === 'left' ? 1 : -1 };
-
-
   }
 }
 
-function walk(bearing, steps) {
+/** walk
+  Given an input of steps, calculate the x/y offset from initial point to
+  final point.
 
+  @param rawInput {string} - the sequence of steps. 'R1, L2, R3'
+  @param initialBearing {string} - one of 'north'/'south'/'east'/'west'
+
+  @example walk('R4, L2', 'north') --> { x: 4, y: -2 }
+*/
+function walk(rawInput, initialBearing = 'north') {
+  const input = formatInput(rawInput);
+
+  const startingPosition = { x: 0, y: 0, bearing: initialBearing };
+
+  return input.reduce((result, step) => {
+    const { bearing } = result;
+    const { direction, distance } = step;
+
+    const offset = getOffsetForStep({ bearing, direction });
+
+    return {
+      x: result.x + offset.x * distance,
+      y: result.y + offset.y * distance,
+      bearing: turnInDirection({ bearing, direction }),
+    };
+  }, startingPosition);
 }
+
+// Not bothering with all the proper docs and stuff, since this is so
+// problem-specific.
+const solvePart1 = () => {
+  const inputString = 'L4, L3, R1, L4, R2, R2, L1, L2, R1, R1, L3, R5, L2, R5, L4, L3, R2, R2, L5, L1, R4, L1, R3, L3, R5, R2, L5, R2, R1, R1, L5, R1, L3, L2, L5, R4, R4, L2, L1, L1, R1, R1, L185, R4, L1, L1, R5, R1, L1, L3, L2, L1, R2, R2, R2, L1, L1, R4, R5, R53, L1, R1, R78, R3, R4, L1, R5, L1, L4, R3, R3, L3, L3, R191, R4, R1, L4, L1, R3, L1, L2, R3, R2, R4, R5, R5, L3, L5, R2, R3, L1, L1, L3, R1, R4, R1, R3, R4, R4, R4, R5, R2, L5, R1, R2, R5, L3, L4, R1, L5, R1, L4, L3, R5, R5, L3, L4, L4, R2, R2, L5, R3, R1, R2, R5, L5, L3, R4, L5, R5, L3, R1, L1, R4, R4, L3, R2, R5, R1, R2, L1, R4, R1, L3, L3, L5, R2, R5, L1, L4, R3, R3, L3, R2, L5, R1, R3, L3, R2, L1, R4, R3, L4, R5, L2, L2, R5, R1, R2, L4, L4, L5, R3, L4';
+
+  const { x, y } = walk(inputString);
+
+  return Math.abs(x) + Math.abs(y);
+}
+
+console.log("SOLUTION:", solvePart1())
+
 
 module.exports = {
   getHumanFriendlyDirection,
   formatInput,
   getOffsetForStep,
+  turnInDirection,
+  walk,
 };
