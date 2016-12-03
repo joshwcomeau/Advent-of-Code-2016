@@ -178,8 +178,8 @@ function walk({
       [secondaryAxis]: stepPosition[secondaryAxis],
     };
 
-    console.log(`current main axis (${primaryAxis}) val: ${stepPosition[primaryAxis]}`);
-    console.log(`current offset: ${offset[primaryAxis]}`)
+    // console.log(`current main axis (${primaryAxis}) val: ${stepPosition[primaryAxis]}`);
+    // console.log(`current offset: ${offset[primaryAxis]}`)
 
 
     if (returnOnDuplicatePosition) {
@@ -229,8 +229,14 @@ const solve = (part) => {
   return Math.abs(x) + Math.abs(y);
 }
 
-console.log("Part 1 Solution:", solve(1));
-console.log("Part 2 Solution:", solve(2));
+
+// Run the solution(s), if any, requested by the command line arguments.
+const [node, filename, ...solutions] = process.argv;
+
+solutions.forEach(solution => {
+  console.log(`Solving for ${solution}:`, solve(solution));
+});
+
 
 module.exports = {
   getHumanFriendlyDirection,
