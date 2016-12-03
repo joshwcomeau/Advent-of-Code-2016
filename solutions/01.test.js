@@ -140,21 +140,24 @@ describe('Problem 01', () => {
 
   describe('walk', () => {
     it('handles a single instruction', () => {
-      const actualResult = walk({ rawInput: 'R5' });
+      const input = formatInput('R5');
+      const actualResult = walk({ input });
       const expectedResult = { x: 5, y: 0, bearing: 'east' };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
 
     it('handles two instructions', () => {
-      const actualResult = walk({ rawInput: 'R5, L2' });
+      const input = formatInput('R5, L2');
+      const actualResult = walk({ input });
       const expectedResult = { x: 5, y: -2, bearing: 'north' };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
 
     it('handles several instructions, and a non-default initial bearing', () => {
-      const actualResult = walk({ rawInput: 'L3, L3, L3, L4', initialBearing: 'west' });
+      const input = formatInput('L3, L3, L3, L4');
+      const actualResult = walk({ input, initialBearing: 'west' });
       const expectedResult = { x: -1, y: 0, bearing: 'west' };
 
       expect(actualResult).to.deep.equal(expectedResult);

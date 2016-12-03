@@ -128,43 +128,76 @@ const getOffsetForStep = ({ bearing, direction }) => {
 
 /** walk
   Given an input of steps, calculate the x/y offset from initial point to
-  final point.
+  final point, OR from initial point to the first duplicated point if
+  requested
 
-  @param rawInput {string} - the sequence of steps. 'R1, L2, R3'
+  @param input {[object]} - the sequence of steps. Provided by `formatInput`.
   @param initialBearing {string} - one of 'north'/'south'/'east'/'west'
+  @param returnOnDuplicateStep {boolean} - Whether to return early, if/whene
+  a duplicated step is found.
 
   @example walk({ rawInput: 'R4, L2' }) --> { x: 4, y: -2 }
 */
-function walk({ rawInput, initialBearing = 'north' }) {
-  const input = formatInput(rawInput);
+function walk({
+  input,
+  initialBearing = 'north',
+  currentPosition = { x: 0, y: 0 },
+  history = {},
+  returnOnDuplicateStep = false,
+}) {
+  const bearing = currentPosition.bearing || initialBearing;
 
-  const startingPosition = { x: 0, y: 0, bearing: initialBearing };
+  const { direction, distance } = input[0];
+  const offset = getOffsetForStep({ bearing, direction });
 
-  return input.reduce((result, step) => {
-    const { bearing } = result;
-    const { direction, distance } = step;
+  // Update the current position
+  const newPosition = {
+    x: currentPosition.x + offset.x * distance,
+    y: currentPosition.y + offset.y * distance,
+    bearing: turnInDirection({ bearing, direction }),
+  };
 
-    const offset = getOffsetForStep({ bearing, direction });
+  // If we'd like to return on duplicated step, we need to track this position
+  // and check it with our history.
+  if (returnOnDuplicateStep) {
+    const positionKey = `${newPosition.x}-${newPosition.y}`;
 
-    return {
-      x: result.x + offset.x * distance,
-      y: result.y + offset.y * distance,
-      bearing: turnInDirection({ bearing, direction }),
-    };
-  }, startingPosition);
+    if (typeof history[positionKey] !== 'undefined') {
+      return newPosition;
+    }
+
+    history[positionKey] = newPosition;
+  }
+
+  // If this is the final step in our input sequence, we're done!
+  const newInput = input.slice(1);
+  if (newInput.length === 0) {
+    return newPosition;
+  }
+
+  return walk({
+    input: newInput,
+    currentPosition: newPosition,
+    history,
+    returnOnDuplicateStep,
+  });
 }
 
 // Not bothering with all the proper docs and stuff, since this is so
 // problem-specific.
-const solvePart1 = () => {
+const solve = (part) => {
   const inputString = 'L4, L3, R1, L4, R2, R2, L1, L2, R1, R1, L3, R5, L2, R5, L4, L3, R2, R2, L5, L1, R4, L1, R3, L3, R5, R2, L5, R2, R1, R1, L5, R1, L3, L2, L5, R4, R4, L2, L1, L1, R1, R1, L185, R4, L1, L1, R5, R1, L1, L3, L2, L1, R2, R2, R2, L1, L1, R4, R5, R53, L1, R1, R78, R3, R4, L1, R5, L1, L4, R3, R3, L3, L3, R191, R4, R1, L4, L1, R3, L1, L2, R3, R2, R4, R5, R5, L3, L5, R2, R3, L1, L1, L3, R1, R4, R1, R3, R4, R4, R4, R5, R2, L5, R1, R2, R5, L3, L4, R1, L5, R1, L4, L3, R5, R5, L3, L4, L4, R2, R2, L5, R3, R1, R2, R5, L5, L3, R4, L5, R5, L3, R1, L1, R4, R4, L3, R2, R5, R1, R2, L1, R4, R1, L3, L3, L5, R2, R5, L1, L4, R3, R3, L3, R2, L5, R1, R3, L3, R2, L1, R4, R3, L4, R5, L2, L2, R5, R1, R2, L4, L4, L5, R3, L4';
 
-  const { x, y } = walk({ rawInput: inputString });
+  const { x, y } = walk({
+    input: formatInput(inputString),
+    returnOnDuplicateStep: part === 2,
+  });
 
   return Math.abs(x) + Math.abs(y);
 }
 
-console.log("SOLUTION:", solvePart1())
+console.log("Part 1 Solution:", solve(1));
+console.log("Part 2 Solution:", solve(2));
 
 
 module.exports = {
