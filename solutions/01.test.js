@@ -214,7 +214,7 @@ describe('Problem 01', () => {
       //     \-x
       const input = formatInput('R5, L2, L2, L5, L3');
       const actualResult = walk({ input, returnOnDuplicatePosition: true });
-      const expectedResult = { x: 2, y: 0 };
+      const expectedResult = { x: 3, y: 0 };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });

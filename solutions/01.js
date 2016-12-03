@@ -178,20 +178,14 @@ function walk({
       [secondaryAxis]: stepPosition[secondaryAxis],
     };
 
-    // console.log(`current main axis (${primaryAxis}) val: ${stepPosition[primaryAxis]}`);
-    // console.log(`current offset: ${offset[primaryAxis]}`)
-
-
     if (returnOnDuplicatePosition) {
       const positionKey = `${stepPosition.x}-${stepPosition.y}`;
 
-      console.log(positionKey)
-
-      if (typeof history[positionKey] !== 'undefined') {
+      if (history[positionKey] === true) {
         return stepPosition;
       }
 
-      history[positionKey] = stepPosition;
+      history[positionKey] = true;
     }
 
     numOfStepsNeeded -= 1;
@@ -223,7 +217,7 @@ const solve = (part) => {
 
   const { x, y } = walk({
     input: formatInput(inputString),
-    returnOnDuplicatePosition: part === 2,
+    returnOnDuplicatePosition: part === '2',
   });
 
   return Math.abs(x) + Math.abs(y);
