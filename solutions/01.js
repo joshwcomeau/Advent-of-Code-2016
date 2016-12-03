@@ -133,9 +133,9 @@ const getOffsetForStep = ({ bearing, direction }) => {
   @param rawInput {string} - the sequence of steps. 'R1, L2, R3'
   @param initialBearing {string} - one of 'north'/'south'/'east'/'west'
 
-  @example walk('R4, L2', 'north') --> { x: 4, y: -2 }
+  @example walk({ rawInput: 'R4, L2' }) --> { x: 4, y: -2 }
 */
-function walk(rawInput, initialBearing = 'north') {
+function walk({ rawInput, initialBearing = 'north' }) {
   const input = formatInput(rawInput);
 
   const startingPosition = { x: 0, y: 0, bearing: initialBearing };
@@ -159,7 +159,7 @@ function walk(rawInput, initialBearing = 'north') {
 const solvePart1 = () => {
   const inputString = 'L4, L3, R1, L4, R2, R2, L1, L2, R1, R1, L3, R5, L2, R5, L4, L3, R2, R2, L5, L1, R4, L1, R3, L3, R5, R2, L5, R2, R1, R1, L5, R1, L3, L2, L5, R4, R4, L2, L1, L1, R1, R1, L185, R4, L1, L1, R5, R1, L1, L3, L2, L1, R2, R2, R2, L1, L1, R4, R5, R53, L1, R1, R78, R3, R4, L1, R5, L1, L4, R3, R3, L3, L3, R191, R4, R1, L4, L1, R3, L1, L2, R3, R2, R4, R5, R5, L3, L5, R2, R3, L1, L1, L3, R1, R4, R1, R3, R4, R4, R4, R5, R2, L5, R1, R2, R5, L3, L4, R1, L5, R1, L4, L3, R5, R5, L3, L4, L4, R2, R2, L5, R3, R1, R2, R5, L5, L3, R4, L5, R5, L3, R1, L1, R4, R4, L3, R2, R5, R1, R2, L1, R4, R1, L3, L3, L5, R2, R5, L1, L4, R3, R3, L3, R2, L5, R1, R3, L3, R2, L1, R4, R3, L4, R5, L2, L2, R5, R1, R2, L4, L4, L5, R3, L4';
 
-  const { x, y } = walk(inputString);
+  const { x, y } = walk({ rawInput: inputString });
 
   return Math.abs(x) + Math.abs(y);
 }
