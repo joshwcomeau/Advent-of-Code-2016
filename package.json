@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec solutions/*.test.js",
-    "problem1": "node solutions/01.js"
+    "test": "mocha --reporter spec solutions/**/*.test.js",
+    "problem1": "node solutions/01",
+    "problem2": "node solutions/02"
   },
   "author": "Joshua Comeau",
   "license": "MIT",

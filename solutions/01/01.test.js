@@ -7,7 +7,7 @@ const {
   getAxes,
   turnInDirection,
   walk,
-} = require('./01.js');
+} = require('./index.js');
 
 
 describe('Problem 01', () => {
@@ -206,7 +206,7 @@ describe('Problem 01', () => {
       expect(actualResult).to.deep.equal(expectedResult);
     });
 
-    it.only('handles returning on duplicate position', () => {
+    it('handles returning on duplicate position', () => {
       //     /-\
       //    |  |
       // O--+--/      <-- should return on the +, not the x
