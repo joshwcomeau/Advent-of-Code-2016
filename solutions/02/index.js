@@ -75,7 +75,7 @@ function getCode({ matrix, instructions, startingPosition = [1, 1] }) {
 
 const solve = (part) => {
   const input = require('./data');
-  const matrix = part === '1' ? (
+  const matrix = part === 'part1' ? (
     [
       ['1', '2', '3'],
       ['4', '5', '6'],
@@ -94,21 +94,9 @@ const solve = (part) => {
   return getCode({
     matrix,
     instructions: input,
-    startingPosition: part === '1' ? [1, 1] : [2, 0],
+    startingPosition: part === 'part1' ? [1, 1] : [2, 0],
   });
 }
-
-
-// Run the solution(s), if any, requested by the command line arguments.
-const [node, filename, ...solutions] = process.argv;
-
-solutions
-  .filter(solution => solution > 0 && solution < 3)
-  .forEach(solution => {
-    console.log(`Solving for ${solution}:`, solve(solution));
-  });
-
-
 
 module.exports = {
   sumArrays,
@@ -116,4 +104,5 @@ module.exports = {
   getCoordinateShiftForDirection,
   outOfBounds,
   moveWithinMatrix,
+  solve,
 };

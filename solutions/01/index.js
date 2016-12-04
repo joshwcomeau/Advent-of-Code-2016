@@ -215,19 +215,11 @@ const solve = (part) => {
 
   const { x, y } = walk({
     input: formatInput(inputString),
-    returnOnDuplicatePosition: part === '2',
+    returnOnDuplicatePosition: part === 'part2',
   });
 
   return Math.abs(x) + Math.abs(y);
 }
-
-
-// Run the solution(s), if any, requested by the command line arguments.
-const [node, filename, ...solutions] = process.argv;
-
-solutions.forEach(solution => {
-  console.log(`Solving for ${solution}:`, solve(solution));
-});
 
 
 module.exports = {
@@ -237,4 +229,5 @@ module.exports = {
   getAxes,
   turnInDirection,
   walk,
+  solve
 };

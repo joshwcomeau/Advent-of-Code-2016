@@ -9,7 +9,7 @@ const {
 } = require('./index.js');
 
 
-describe.only('Problem 02', () => {
+describe('Problem 02', () => {
   describe('sumArrays', () => {
     it('sums values in the same positions', () => {
       const actualResult = sumArrays([1, 2], [3, 4]);
