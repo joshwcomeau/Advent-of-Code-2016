@@ -32,7 +32,6 @@ const getCoordinateShiftForDirection = direction => {
 
 function moveWithinMatrix({
   matrix,
-  code = '',
   currentPosition = [1, 1],
   instructions,
 }) {
@@ -45,27 +44,33 @@ function moveWithinMatrix({
 
   const isOutOfBounds = outOfBounds(matrix, newPosition)
 
-  // Ignore any 'illegal' moves that fall outside the given matrix
-  if (!isOutOfBounds) {
-    const [x, y] = newPosition;
-    const digit = matrix[x][y];
-
-    code += digit;
-  }
-
-  // If that's the last of the instructions, we're done!
   const nextInstructions = instructions.substr(1);
 
+  // If that's the last of the instructions, we're done!
   if (!nextInstructions) {
-    return code;
+    const [x, y] = newPosition;
+    return matrix[clamper(x)][clamper(y)];
   }
 
   return moveWithinMatrix({
     matrix,
-    code,
     currentPosition: isOutOfBounds ? currentPosition : newPosition,
     instructions: nextInstructions,
   });
+}
+
+function getCode({ matrix, instructions, startingPosition = [1, 1] }) {
+  // Split each line of instructions into its own string
+  const splitInstructions = instructions.split('\n');
+
+  // Solve for each line, combine into a code
+  return splitInstructions.reduce((code, instructions) => (
+    code + moveWithinMatrix({
+      matrix,
+      instructions,
+      currentPosition: startingPosition,
+    })
+  ), '');
 }
 
 
@@ -75,9 +80,9 @@ const solve = (part) => {
     ['1', '2', '3'],
     ['4', '5', '6'],
     ['7', '8', '9'],
-  ]
+  ];
 
-  return moveWithinMatrix({ matrix, instructions: input })
+  return getCode({ matrix, instructions: input })
 }
 
 
