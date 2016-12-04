@@ -1,7 +1,8 @@
 const problem1 = require('./01');
 const problem2 = require('./02');
+const problem3 = require('./03');
 
-const problems = { problem1, problem2 };
+const problems = { problem1, problem2, problem3 };
 
 
 // Run the solution(s), if any, requested by the command line arguments.
