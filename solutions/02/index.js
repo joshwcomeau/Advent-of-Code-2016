@@ -1,3 +1,6 @@
+// Solution for Advent of Code, Day 2:
+// http://adventofcode.com/2016/day/2
+
 // sum the results of 2 arrays.
 // eg. [1, 2] + [3, 4] = [4, 6]
 const sumArrays = (arr1, arr2) => (
@@ -9,15 +12,11 @@ const clamp = ({ min, max }) => num => (
 );
 
 const outOfBounds = (matrix, [x, y]) => {
-  // For the purposes of this problem, we'll assume that the matrix is always
-  // a square (equal length X and Y axes).
-  const min = 0;
-  const max = matrix.length - 1
-
-  return (
-    x < min || x > max ||
-    y < min || y > max
-  );
+  try {
+    return !matrix[x][y];
+  } catch (e) {
+    return true;
+  }
 }
 
 const getCoordinateShiftForDirection = direction => {
@@ -76,22 +75,38 @@ function getCode({ matrix, instructions, startingPosition = [1, 1] }) {
 
 const solve = (part) => {
   const input = require('./data');
-  const matrix = [
-    ['1', '2', '3'],
-    ['4', '5', '6'],
-    ['7', '8', '9'],
-  ];
+  const matrix = part === '1' ? (
+    [
+      ['1', '2', '3'],
+      ['4', '5', '6'],
+      ['7', '8', '9'],
+    ]
+  ) : (
+    [
+      [null, null, '1', null, null],
+      [null, '2',  '3',  '4', null],
+      ['5',  '6',  '7',  '8',  '9'],
+      [null, 'A',  'B',  'C', null],
+      [null, null, 'D', null, null],
+    ]
+  );
 
-  return getCode({ matrix, instructions: input })
+  return getCode({
+    matrix,
+    instructions: input,
+    startingPosition: part === '1' ? [1, 1] : [2, 0],
+  });
 }
 
 
 // Run the solution(s), if any, requested by the command line arguments.
 const [node, filename, ...solutions] = process.argv;
 
-solutions.forEach(solution => {
-  console.log(`Solving for ${solution}:`, solve(solution));
-});
+solutions
+  .filter(solution => solution > 0 && solution < 3)
+  .forEach(solution => {
+    console.log(`Solving for ${solution}:`, solve(solution));
+  });
 
 
 

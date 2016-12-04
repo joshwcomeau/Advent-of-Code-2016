@@ -10,12 +10,6 @@ const {
 
 
 describe.only('Problem 02', () => {
-  const matrix = [
-    ['1', '2', '3'],
-    ['4', '5', '6'],
-    ['7', '8', '9'],
-  ];
-
   describe('sumArrays', () => {
     it('sums values in the same positions', () => {
       const actualResult = sumArrays([1, 2], [3, 4]);
@@ -69,6 +63,12 @@ describe.only('Problem 02', () => {
   });
 
   describe('outOfBounds', () => {
+    const matrix = [
+      ['1', '2', '3'],
+      ['4', '5', '6'],
+      ['7', '8', '9'],
+    ];
+
     it('returns true if the X coordinate is too low', () => {
       const actualResult = outOfBounds(matrix, [-1, 1]);
       const expectedResult = true;
@@ -106,11 +106,24 @@ describe.only('Problem 02', () => {
   })
 
   describe('moveWithinMatrix', () => {
+    const matrix = [
+      ['1', '2', '3'],
+      ['4', '5', '6'],
+      ['7', '8', '9'],
+    ];
+
+    const irregularMatrix = [
+      [null, null, null, '1'],
+      [null, null, '2',  '3'],
+      [null, '4',  '5',  '6'],
+      ['7',  '8',  '9',  '0'],
+    ];
+
     it('handles a simple instruction', () => {
       const instructions = 'UL';
 
       const actualResult = moveWithinMatrix({ matrix, instructions });
-      const expectedResult = '21';
+      const expectedResult = '1';
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
@@ -119,7 +132,7 @@ describe.only('Problem 02', () => {
       const instructions = 'ULDRRDLU';
 
       const actualResult = moveWithinMatrix({ matrix, instructions });
-      const expectedResult = '21456985';
+      const expectedResult = '5';
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
@@ -128,7 +141,33 @@ describe.only('Problem 02', () => {
       const instructions = 'UUUUUL';
 
       const actualResult = moveWithinMatrix({ matrix, instructions });
-      const expectedResult = '21';
+      const expectedResult = '1';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('handles an irregular matrix', () => {
+      const instructions = 'RU';
+
+      const actualResult = moveWithinMatrix({
+        matrix: irregularMatrix,
+        currentPosition: [3, 0],
+        instructions,
+      });
+      const expectedResult = '4';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('clamps within an irregular matrix', () => {
+      const instructions = 'DLDLR';
+
+      const actualResult = moveWithinMatrix({
+        matrix: irregularMatrix,
+        currentPosition: [3, 0],
+        instructions,
+      });
+      const expectedResult = '8';
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
