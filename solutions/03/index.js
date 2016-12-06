@@ -88,10 +88,9 @@ const solve = (part) => {
     console.log("Got formatted input", formattedInput.slice(formattedInput.length - 5))
   }
 
-  return formattedInput.reduce((sum, triangle) => {
-    console.log("checking triangle", triangle, validateTriangle(...triangle))
-    return validateTriangle(...triangle) ? sum + 1 : sum;
-  }, 0);
+  return formattedInput.reduce((sum, triangle) => (
+    validateTriangle(...triangle) ? sum + 1 : sum
+  ), 0);
 }
 
 
