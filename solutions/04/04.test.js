@@ -6,6 +6,7 @@ const {
   getChecksum,
   validateRoom,
   getValidRooms,
+  shift,
   solve
 } = require('./index.js');
 
@@ -177,7 +178,7 @@ describe.only('Problem 04', () => {
   });
 
   describe('getValidRooms', () => {
-    it('returns an array of valid sectors', () => {
+    it('returns an parsed set of valid rooms', () => {
       const roomList = [
         'abcde-abcd-abc-ab-a-123[abcde]',
         'not-a-valid-room-456[abcde]',
@@ -202,19 +203,59 @@ describe.only('Problem 04', () => {
     });
   });
 
-  describe('solve', () => {
-    it('gets the right answer for the sample data', () => {
-      const roomList = [
-        'aaaaa-bbb-z-y-x-123[abxyz]',
-        'a-b-c-d-e-f-g-h-987[abcde]',
-        'not-a-real-room-404[oarel]',
-        'totally-real-room-200[decoy]',
-      ].join('\n');
+  describe('shift', () => {
+    it('shifts a string by 4 characters', () => {
+      const string = 'josh';
 
-      const actualResult = solve(1, roomList)
-      const expectedResult = 1514;
+      const actualResult = shift(string, 4);
+      const expectedResult = 'nswl';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('handles letters that "wrap around"', () => {
+      const string = 'wow';
+
+      const actualResult = shift(string, 5);
+      const expectedResult = 'btb';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('handles shifts of more than 26 letters', () => {
+      const string = 'wow';
+
+      const actualResult = shift(string, 31);
+      const expectedResult = 'btb';
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('converts dashes to spaces', () => {
+      const string = 'hi-five';
+
+      const actualResult = shift(string, 31);
+      const expectedResult = 'mn knaj';
 
       expect(actualResult).to.deep.equal(expectedResult);
     })
-  })
+  });
+
+  describe('solve', () => {
+    context('part 1', () => {
+      it('gets the right answer for the sample data', () => {
+        const roomList = [
+          'aaaaa-bbb-z-y-x-123[abxyz]',
+          'a-b-c-d-e-f-g-h-987[abcde]',
+          'not-a-real-room-404[oarel]',
+          'totally-real-room-200[decoy]',
+        ].join('\n');
+
+        const actualResult = solve('part1', roomList)
+        const expectedResult = 1514;
+
+        expect(actualResult).to.deep.equal(expectedResult);
+      });
+    });
+  });
 });

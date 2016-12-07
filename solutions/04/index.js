@@ -55,10 +55,40 @@ const getValidRooms = (input) => {
 };
 
 
+const shift = (string, n) => {
+  return string
+    .split('')
+    .map(char => {
+      // Special case: dashes become spaces
+      if (char === '-') {
+        return ' ';
+      }
+
+      // We only deal with lowercase letters. Char codes range from 97 to 122.
+      const charCode = char.charCodeAt();
+      let newCharCode = charCode + (n % 26);
+      if (newCharCode > 122) {
+        newCharCode -= 26;
+      }
+
+      return String.fromCharCode(newCharCode);
+    })
+    .join('');
+}
+
+
 const solve = (part, input = sampleInput) => {
   const validRooms = getValidRooms(input);
 
-  return validRooms.reduce((sum, { sector }) => sum + Number(sector), 0);
+  if (part === 'part1') {
+    return validRooms.reduce((sum, { sector }) => sum + Number(sector), 0);
+  }
+
+  // For part 2, we need to decrypt!
+  return validRooms.find(({ encryptedName, sector}) => {
+    const decryptedName = shift(encryptedName, sector);
+    return decryptedName === 'northpole object storage';
+  }).sector;
 };
 
 
@@ -68,5 +98,6 @@ module.exports = {
   getChecksum,
   validateRoom,
   getValidRooms,
+  shift,
   solve,
 };
