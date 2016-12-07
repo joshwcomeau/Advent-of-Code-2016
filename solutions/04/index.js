@@ -39,29 +39,26 @@ const validateRoom = ({ encryptedName, checksum: providedChecksum }) => {
   const counts = getLetterCounts(encryptedName);
   const computedChecksum = getChecksum(counts);
 
-  console.log({encryptedName, computedChecksum, providedChecksum }, computedChecksum === providedChecksum)
-
   return computedChecksum === providedChecksum;
 };
 
 
-const getValidRoomSectors = (input) => {
-  const roomList = input.split('\n');
-
-  return roomList.reduce((sectors, roomListItem) => {
-    const parsedItem = parseRoomListItem(roomListItem);
-
-    return validateRoom(parsedItem)
-      ? [...sectors, parsedItem.sector]
-      : sectors;
-  }, []);
+// This function needs a better name. It both filters AND parses the input,
+// meaning that data returned is in a different format from data provided.
+// 'abc-de-f-123[abcde]'
+//    -> { encryptedName: 'abc-de-f', sector: 123, checksum: 'abcde' }
+const getValidRooms = (input) => {
+  return input
+    .split('\n')
+    .map(parseRoomListItem)
+    .filter(validateRoom);
 };
 
 
 const solve = (part, input = sampleInput) => {
-  return getValidRoomSectors(input).reduce((sum, sector) => {
-    return sum + Number(sector)
-  }, 0);
+  const validRooms = getValidRooms(input);
+
+  return validRooms.reduce((sum, { sector }) => sum + Number(sector), 0);
 };
 
 
@@ -70,6 +67,6 @@ module.exports = {
   getLetterCounts,
   getChecksum,
   validateRoom,
-  getValidRoomSectors,
+  getValidRooms,
   solve,
 };

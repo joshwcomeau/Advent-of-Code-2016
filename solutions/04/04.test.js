@@ -5,7 +5,7 @@ const {
   getLetterCounts,
   getChecksum,
   validateRoom,
-  getValidRoomSectors,
+  getValidRooms,
   solve
 } = require('./index.js');
 
@@ -176,7 +176,7 @@ describe.only('Problem 04', () => {
     });
   });
 
-  describe('getValidRoomSectors', () => {
+  describe('getValidRooms', () => {
     it('returns an array of valid sectors', () => {
       const roomList = [
         'abcde-abcd-abc-ab-a-123[abcde]',
@@ -184,8 +184,19 @@ describe.only('Problem 04', () => {
         'v-www-xxxx-yy-zzzzz-789[zxwyv]',
       ].join('\n');
 
-      const actualResult = getValidRoomSectors(roomList)
-      const expectedResult = ['123', '789'];
+      const actualResult = getValidRooms(roomList)
+      const expectedResult = [
+        {
+          checksum: "abcde",
+          encryptedName: "abcde-abcd-abc-ab-a",
+          sector: "123",
+        },
+        {
+          checksum: "zxwyv",
+          encryptedName: "v-www-xxxx-yy-zzzzz",
+          sector: "789",
+        },
+      ];
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
