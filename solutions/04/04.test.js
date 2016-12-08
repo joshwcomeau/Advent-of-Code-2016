@@ -11,7 +11,7 @@ const {
 } = require('./index.js');
 
 
-describe.only('Problem 04', () => {
+describe('Problem 04', () => {
   describe('parseRoomListItem', () => {
     it('returns the encrypted name, sector, and checksum', () => {
       const listItem = 'aaaaa-bbb-z-y-x-123[abxyz]';

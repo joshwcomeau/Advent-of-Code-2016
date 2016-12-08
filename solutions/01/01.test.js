@@ -6,6 +6,7 @@ const {
   getMultiplicandForStep,
   getAxes,
   turnInDirection,
+  step,
   walk,
 } = require('./index.js');
 
@@ -31,7 +32,7 @@ describe('Problem 01', () => {
 
       const actualResult = formatInput(input);
       const expectedResult = [
-        { direction: 'left', distance: 4 },
+        'left', 'straight', 'straight', 'straight', 'straight',
       ];
 
       expect(actualResult).to.deep.equal(expectedResult);
@@ -42,7 +43,10 @@ describe('Problem 01', () => {
 
       const actualResult = formatInput(input);
       const expectedResult = [
-        { direction: 'left', distance: 14 },
+        'left',
+        'straight', 'straight', 'straight', 'straight', 'straight',
+        'straight', 'straight', 'straight', 'straight', 'straight',
+        'straight','straight', 'straight', 'straight',
       ];
 
       expect(actualResult).to.deep.equal(expectedResult);
@@ -53,46 +57,11 @@ describe('Problem 01', () => {
 
       const actualResult = formatInput(input);
       const expectedResult = [
-        { direction: 'right', distance: 4 },
-        { direction: 'right', distance: 2 },
-        { direction: 'left', distance: 1 },
-        { direction: 'right', distance: 5 },
+        'right', 'straight', 'straight', 'straight', 'straight',
+        'right', 'straight', 'straight',
+        'left', 'straight',
+        'right', 'straight', 'straight', 'straight', 'straight', 'straight',
       ];
-
-      expect(actualResult).to.deep.equal(expectedResult);
-    });
-  });
-
-  describe('getMultiplicandForStep', () => {
-    it('handles `north` and `left`', () => {
-      const actualResult = getMultiplicandForStep({
-        bearing: 'north',
-        direction: 'left',
-      });
-
-      const expectedResult = { x: -1, y: 0 };
-
-      expect(actualResult).to.deep.equal(expectedResult);
-    });
-
-    it('handles `west` and `right`', () => {
-      const actualResult = getMultiplicandForStep({
-        bearing: 'west',
-        direction: 'right',
-      });
-
-      const expectedResult = { x: 0, y: -1 };
-
-      expect(actualResult).to.deep.equal(expectedResult);
-    });
-
-    it('handles `south` and `right`', () => {
-      const actualResult = getMultiplicandForStep({
-        bearing: 'south',
-        direction: 'right',
-      });
-
-      const expectedResult = { x: -1, y: 0 };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
@@ -181,26 +150,65 @@ describe('Problem 01', () => {
     });
   });
 
-  describe('walk', () => {
+  describe.only('step', () => {
+    it('handles going straight', () => {
+      const position = { x: 0, y: 0, bearing: 'north' };
+      const instruction = 'straight';
+
+      const actualResult = step({ position, instruction });
+      const expectedResult = { x: 0, y: -1, bearing: 'north' };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('handles a right turn', () => {
+      const position = { x: 0, y: 0, bearing: 'north' };
+      const instruction = 'right';
+
+      const actualResult = step({ position, instruction });
+      const expectedResult = { x: 0, y: 0, bearing: 'east' };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+
+    it('handles a left turn', () => {
+      const position = { x: 0, y: 0, bearing: 'west' };
+      const instruction = 'left';
+
+      const actualResult = step({ position, instruction });
+      const expectedResult = { x: 0, y: 0, bearing: 'south' };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+  });
+
+  describe.only('walk', () => {
     it('handles a single instruction', () => {
-      const input = formatInput('R5');
-      const actualResult = walk({ input });
+      const instructions = formatInput('R5');
+      const actualResult = walk({ instructions });
       const expectedResult = { x: 5, y: 0, bearing: 'east' };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
 
     it('handles two instructions', () => {
-      const input = formatInput('R5, L2');
-      const actualResult = walk({ input });
+      const instructions = formatInput('R5, L2');
+      const actualResult = walk({ instructions });
       const expectedResult = { x: 5, y: -2, bearing: 'north' };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });
 
     it('handles several instructions, and a non-default initial bearing', () => {
-      const input = formatInput('L3, L3, L3, L4');
-      const actualResult = walk({ input, initialBearing: 'west' });
+      const instructions = formatInput('L3, L3, L3, L4');
+      const actualResult = walk({
+        instructions,
+        position: {
+          x: 0,
+          y: 0,
+          bearing: 'west',
+        },
+      });
       const expectedResult = { x: -1, y: 0, bearing: 'west' };
 
       expect(actualResult).to.deep.equal(expectedResult);
@@ -212,9 +220,9 @@ describe('Problem 01', () => {
       // O--+--/      <-- should return on the +, not the x
       //    |
       //     \-x
-      const input = formatInput('R5, L2, L2, L5, L3');
-      const actualResult = walk({ input, returnOnDuplicatePosition: true });
-      const expectedResult = { x: 3, y: 0 };
+      const instructions = formatInput('R5, L2, L2, L5, L3');
+      const actualResult = walk({ instructions, returnOnDuplicatePosition: true });
+      const expectedResult = { x: 3, y: 0, bearing: 'south' };
 
       expect(actualResult).to.deep.equal(expectedResult);
     });

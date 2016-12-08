@@ -98,9 +98,9 @@ describe('Problem 03', () => {
 
       const actualResult = getTrianglesFromColumns(matrix);
       const expectedResult = [
-        [103, 102, 101],
-        [203, 202, 201],
-        [303, 302, 301],
+        [101, 102, 103],
+        [201, 202, 203],
+        [301, 302, 303],
       ];
 
       expect(actualResult).to.deep.equal(expectedResult);
@@ -118,12 +118,12 @@ describe('Problem 03', () => {
 
       const actualResult = getTrianglesFromColumns(matrix);
       const expectedResult = [
-        [103, 102, 101],
-        [203, 202, 201],
-        [303, 302, 301],
-        [403, 402, 401],
-        [503, 502, 501],
-        [603, 602, 601],
+        [101, 102, 103],
+        [201, 202, 203],
+        [301, 302, 303],
+        [401, 402, 403],
+        [501, 502, 503],
+        [601, 602, 603],
       ];
 
       expect(actualResult).to.deep.equal(expectedResult);
