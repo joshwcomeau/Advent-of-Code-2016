@@ -150,7 +150,7 @@ describe('Problem 01', () => {
     });
   });
 
-  describe.only('step', () => {
+  describe('step', () => {
     it('handles going straight', () => {
       const position = { x: 0, y: 0, bearing: 'north' };
       const instruction = 'straight';
@@ -182,7 +182,7 @@ describe('Problem 01', () => {
     });
   });
 
-  describe.only('walk', () => {
+  describe('walk', () => {
     it('handles a single instruction', () => {
       const instructions = formatInput('R5');
       const actualResult = walk({ instructions });
