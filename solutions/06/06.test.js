@@ -1,11 +1,29 @@
 const { expect } = require('chai');
 
 const {
+  formatInput,
   rotateMatrix,
+  getModeFromArray,
+  solve,
 } = require('./index');
 
 
 describe.only('Problem 06', () => {
+  describe('formatInput', () => {
+    it('splits into a matrix', () => {
+      const input = `abc\ndef\nghi`;
+
+      const actualResult = formatInput(input);
+      const expectedResult = [
+        ['a', 'b', 'c'],
+        ['d', 'e', 'f'],
+        ['g', 'h', 'i'],
+      ];
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    });
+  });
+
   describe('rotateMatrix', () => {
     it('pseudo-rotates the matrix clockwise', () => {
       const matrix = [
@@ -22,6 +40,46 @@ describe.only('Problem 06', () => {
       ];
 
       expect(actualResult).to.deep.equal(expectedResult);
+    });
+  });
+
+  describe('getModeFromArray', () => {
+    it('finds the most prevalent element', () => {
+      const arr = ['a', 'b', 'b', 'c', 'd', 'e'];
+
+      const actualResult = getModeFromArray(arr);
+      const expectedResult = 'b';
+
+      expect(actualResult).to.equal(expectedResult);
+    });
+
+    it('returns the first match in the event of a tie', () => {
+      const arr = ['z', 'y', 'x', 'y', 'x'];
+
+      const actualResult = getModeFromArray(arr);
+      const expectedResult = 'y';
+
+      expect(actualResult).to.equal(expectedResult);
+    });
+  });
+
+  describe('solve', () => {
+    it('solves part 1', () => {
+      const input = `ealao\nhelba\nh2lco\nivll2\noello`;
+
+      const actualResult = solve('part1', input);
+      const expectedResult = 'hello';
+
+      expect(actualResult).to.equal(expectedResult);
+    });
+
+    it('ignores additional rows for rectangular matrices', () => {
+      const input = `ealao\nhelba\nh2lco\nivll2\noello\nhello\nhello`;
+
+      const actualResult = solve('part1', input);
+      const expectedResult = 'hello';
+
+      expect(actualResult).to.equal(expectedResult);
     });
   });
 });
