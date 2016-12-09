@@ -3,6 +3,7 @@ const { expect } = require('chai');
 const {
   formatInput,
   rotateMatrix,
+  getElementMap,
   getModeFromArray,
   solve,
 } = require('./index');
@@ -43,6 +44,23 @@ describe.only('Problem 06', () => {
     });
   });
 
+  describe('getElementMap', () => {
+    it('builds a map of elements by occurence', () => {
+      const arr = ['a', 'b', 'b', 'c', 'd', 'e'];
+
+      const actualResult = getElementMap(arr);
+      const expectedResult = {
+        a: 1,
+        b: 2,
+        c: 1,
+        d: 1,
+        e: 1,
+      };
+
+      expect(actualResult).to.deep.equal(expectedResult);
+    })
+  });
+
   describe('getModeFromArray', () => {
     it('finds the most prevalent element', () => {
       const arr = ['a', 'b', 'b', 'c', 'd', 'e'];
@@ -72,6 +90,15 @@ describe.only('Problem 06', () => {
 
       expect(actualResult).to.equal(expectedResult);
     });
+
+    it('solves part 2', () => {
+      const input = `bzr\nayr\naze`;
+
+      const actualResult = solve('part2', input);
+      const expectedResult = 'bye';
+
+      expect(actualResult).to.equal(expectedResult);
+    })
 
     it('ignores additional rows for rectangular matrices', () => {
       const input = `ealao\nhelba\nh2lco\nivll2\noello\nhello\nhello`;
