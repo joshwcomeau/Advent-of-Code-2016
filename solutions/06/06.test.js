@@ -9,7 +9,7 @@ const {
 } = require('./index');
 
 
-describe.only('Problem 06', () => {
+describe('Problem 06', () => {
   describe('formatInput', () => {
     it('splits into a matrix', () => {
       const input = `abc\ndef\nghi`;
